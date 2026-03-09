@@ -1,0 +1,39 @@
+name: Trivy SAST + SCA Scan
+on:
+  push:
+  pull_request:
+jobs:
+  trivy-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      # -----------------------------
+      # 1. TRIVY SAST SCAN (fs mode)
+      # -----------------------------
+      # This analyzes source code, JS files, scripts, suspicious patterns,
+      # and malware-like behavior — useful for detecting Shai‑Hulud infections.
+      - name: Trivy SAST (Filesystem) Scan
+        run: |
+          trivy fs \
+            --scanners vuln,misconfig,secret \
+            --severity HIGH,CRITICAL \
+            --exit-code 1 \
+            .
+      # -----------------------------------
+      # 2. TRIVY SCA (Dependency) Scanning
+      # -----------------------------------
+      # Detects compromised npm packages
+      - name: Trivy SCA (Dependencies)
+        run: |
+          trivy fs \
+            --scanners vuln \
+            --ignore-unfixed \
+            --exit-code 1 \
+            .
+      # ----------------------------------------------------
+      # 3. OPTIONAL: Scan for malicious NPM scripts directly
+      # ----------------------------------------------------
+      - name: Scan for malicious npm lifecycle scripts
+        run: |
+          trivy fs --scanners malware .
