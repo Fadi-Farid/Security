@@ -12,4 +12,3 @@ runs:
         severity: "HIGH,CRITICAL"
         ignore-unfixed: true
         exit-code: 1
-``
