@@ -1,4 +1,3 @@
-
 name: "Trivy SCA Scan Action"
 description: "Reusable action for Trivy filesystem SCA + secret scanning"
 
@@ -13,4 +12,3 @@ runs:
         severity: "HIGH,CRITICAL"
         ignore-unfixed: true
         exit-code: 1
-``
