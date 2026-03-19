@@ -1,1 +1,16 @@
 
+name: Trivy SCA Scan   # <-- Workflow Name
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  trivy-sca:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Run Trivy SCA Scan Action
+        uses: ./.github/actions/trivy-sca   # <-- Calling your custom action
