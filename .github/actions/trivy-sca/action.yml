@@ -1,0 +1,16 @@
+
+name: "Trivy SCA Scan Action"
+description: "Reusable action for Trivy filesystem SCA + secret scanning"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run Trivy SCA Scan
+      uses: aquasecurity/trivy-action@0.20.0
+      with:
+        scan-type: "fs"
+        scanners: "vuln,secret"
+        severity: "HIGH,CRITICAL"
+        ignore-unfixed: true
+        exit-code: 1
+``
