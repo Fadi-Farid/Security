@@ -15,7 +15,7 @@ runs:
   using: "composite"
   steps:
     - name: Run Trivy SCA Scan
-      uses: aquasecurity/trivy-action@0.20.0
+      uses: aquasecurity/trivy-action@v0.20.0
       with:
         scan-type: "fs"
         scanners: ${{ inputs.scanners }}
