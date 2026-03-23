@@ -10,7 +10,10 @@ inputs:
     description: "Trivy scanners to enable (e.g., vuln,secret,config)."
     required: false
     default: "vuln,secret"
-
+outputs:
+  sarif_file:
+    description: "Generated SARIF file"
+    value: trivy-results.sarif
 runs:
   using: "composite"
   steps:
@@ -26,9 +29,5 @@ runs:
         format: "sarif"
         output: "trivy-results.sarif"
             
-    - name: Upload SARIF to code scanning
-      uses: github/codeql-action/upload-sarif@v3 
-      with:
-          sarif_file: ${{ steps.trivy.outputs.trivy-results.sarif }}
-        
+
 
