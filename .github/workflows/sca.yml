@@ -1,4 +1,4 @@
-name: Trivy SCA Scan   # <-- Workflow Name
+name: 'Trivy SCA Scan'
 
 on:
   push:
