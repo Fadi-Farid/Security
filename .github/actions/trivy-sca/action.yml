@@ -22,3 +22,11 @@ runs:
         severity: ${{ inputs.severity }}
         ignore-unfixed: true
         exit-code: 1
+        format: "sarif"
+        output: "trivy-results.sarif"
+            
+    - name: Upload SARIF to code scanning
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ${{ steps.trivy.outputs.report-file }}
+
