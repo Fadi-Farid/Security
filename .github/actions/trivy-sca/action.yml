@@ -27,8 +27,8 @@ runs:
         output: "trivy-results.sarif"
             
     - name: Upload SARIF to code scanning
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@v3 
       with:
-        sarif_file: ${{ steps.trivy.outputs.trivy-results.sarif }}
+          sarif_file: ${{ steps.trivy.outputs.trivy-results.sarif }}
         
 
