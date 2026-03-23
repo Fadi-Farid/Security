@@ -1,5 +1,10 @@
 name: 'Trivy SCA Scan'
 
+permissions:
+  contents: read
+  actions: read           # <-- required for Get a workflow run
+  security-events: write  # <-- required to upload SARIF to Code Scanning
+
 on:
   push:
   pull_request:
@@ -13,6 +18,10 @@ jobs:
 
       - name: Run Trivy SCA Scan Action
         id: trivy
+        permissions:
+        contents: read
+        actions: read
+        security-events: write
         uses: ./.github/actions/trivy-sca   
         with:
           scanners: "vuln,secret"
