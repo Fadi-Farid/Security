@@ -12,5 +12,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Trivy SCA Scan Action
-        uses: ./.github/actions/trivy-sca   # <-- Calling your custom action
-
+        uses: ./.github/actions/trivy-sca   
+        with:
+          scanners: "vuln,secret"
+          severity: "HIGH,CRITICAL"
