@@ -12,10 +12,6 @@ jobs:
 
       - name: Run Trivy SCA Scan Action
         id: trivy
-        permissions:
-          contents: read
-          actions: read
-          security-events: write
         uses: ./.github/actions/trivy-sca   
         with:
           scanners: "vuln,secret"
