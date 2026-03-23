@@ -15,6 +15,7 @@ runs:
   using: "composite"
   steps:
     - name: Run Trivy SCA Scan
+      id: trivy
       uses: aquasecurity/trivy-action@v0.20.0
       with:
         scan-type: "fs"
@@ -29,4 +30,5 @@ runs:
       uses: github/codeql-action/upload-sarif@v3
       with:
         sarif_file: ${{ steps.trivy.outputs.report-file }}
+        
 
