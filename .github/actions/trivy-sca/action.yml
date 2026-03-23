@@ -1,6 +1,16 @@
 name: "Trivy SCA Scan Action"
 description: "Reusable action for Trivy filesystem SCA + secret scanning"
 
+inputs:
+  severity:
+    description: "Severity levels to report."
+    required: false
+    default: "HIGH,CRITICAL"
+  scanners:
+    description: "Trivy scanners to enable (e.g., vuln,secret,config)."
+    required: false
+    default: "vuln,secret"
+
 runs:
   using: "composite"
   steps:
@@ -8,7 +18,7 @@ runs:
       uses: aquasecurity/trivy-action@0.20.0
       with:
         scan-type: "fs"
-        scanners: "vuln,secret"
-        severity: "HIGH,CRITICAL"
+        scanners: ${{ inputs.scanners }}
+        severity: ${{ inputs.severity }}
         ignore-unfixed: true
         exit-code: 1
