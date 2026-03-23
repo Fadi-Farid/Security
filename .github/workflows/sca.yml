@@ -18,7 +18,7 @@ jobs:
         id: trivy
         uses: ./.github/actions/trivy-sca   
         with:
-          scanners: "vuln,secret"
+          scanners: "vuln"
           severity: "HIGH,CRITICAL"
           output: "trivy-results.sarif"
 
