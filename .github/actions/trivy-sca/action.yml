@@ -29,6 +29,6 @@ runs:
     - name: Upload SARIF to code scanning
       uses: github/codeql-action/upload-sarif@v3
       with:
-        sarif_file: ${{ steps.trivy.outputs.report-file }}
+        sarif_file: ${{ steps.trivy.outputs.trivy-results.sarif }}
         
 
