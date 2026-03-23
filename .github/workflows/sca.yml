@@ -20,6 +20,7 @@ jobs:
         with:
           scanners: "vuln,secret"
           severity: "HIGH,CRITICAL"
+          output: "trivy-results.sarif"
 
             
       - name: Upload SARIF as artifact
