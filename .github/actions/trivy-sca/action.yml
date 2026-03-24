@@ -19,7 +19,7 @@ inputs:
     default: "0.69.3"
 
 outputs:
-  sarif_file:
+  trivy-results:
     description: "Generated SARIF file"
     value: trivy-results.txt
     
