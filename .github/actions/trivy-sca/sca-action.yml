@@ -17,15 +17,26 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Run Trivy SCA Scan
-      id: trivy
-      uses: aquasecurity/trivy-action@v0.20.0
-      with:
-        scan-type: "fs"
-        scanners: ${{ inputs.scanners }}
-        severity: ${{ inputs.severity }}
-        ignore-unfixed: true
-        exit-code: 0
-        format: "table"
-        output: "trivy-results.txt"
+    - name: Install Trivy
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="0.69.3"
+          curl -fsSL "https://github.com/aquasecurity/trivy/releases/download/v${VERSION}/trivy_${VERSION}_Linux-64bit.tar.gz" \
+            -o trivy.tgz
+          sudo tar -C /usr/local/bin -xzf trivy.tgz trivy
+          trivy --version
+      - name: Run Trivy SCA (fs → JSON)
+        env:
+          COMPONENT_PATH: "."
+        run: |
+          trivy fs \
+            --scanners vuln \
+            --vuln-type library \
+            --severity LOW,MEDIUM,HIGH,CRITICAL \
+            --ignore-unfixed \
+            --list-all-pkgs \
+            --skip-dirs "venv,.venv,.tox,.eggs,build,dist,__pycache__" \
+            --format table \
+            . | tee "trivy-results.txt"
             
