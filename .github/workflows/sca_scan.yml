@@ -32,3 +32,12 @@ jobs:
           recreate: true
           path: trivy-results.txt
 
+          
+      - name: Add Trivy table to Summary
+        run: |
+          echo "## Trivy Scan Results" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat trivy-results.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+
