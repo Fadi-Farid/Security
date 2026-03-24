@@ -18,6 +18,7 @@ jobs:
           severity:  "HIGH,CRITICAL"
           version:   "0.69.3"
           skip_dirs: "venv,.venv,.tox,.eggs,build,dist,__pycache__"
+          skip_files: ".github/actions/trivy-sca/actions.yml"
 
       - name: Upload trivy-results as artifact
         uses: actions/upload-artifact@v4
