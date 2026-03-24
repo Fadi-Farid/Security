@@ -24,3 +24,11 @@ jobs:
         with:
           name: trivy-results
           path: trivy-results.txt
+
+    - name: Comment Trivy results on PR
+      if: ${{ github.event_name == 'pull_request' }}
+      uses: marocchino/sticky-pull-request-comment@v2
+      with:
+        recreate: true
+        path: trivy-results.txt
+
