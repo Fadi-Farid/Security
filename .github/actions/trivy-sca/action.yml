@@ -26,8 +26,8 @@ runs:
         severity: ${{ inputs.severity }}
         ignore-unfixed: true
         exit-code: 0
-        format: "sarif"
-        output: "trivy-results.sarif"
+        format: "table"
+        output: "trivy-results.txt"
             
 
 
