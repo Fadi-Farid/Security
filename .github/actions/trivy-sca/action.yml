@@ -26,3 +26,21 @@ runs:
           -o trivy.tgz
         sudo tar -C /usr/local/bin -xzf trivy.tgz trivy
         trivy --version    
+        
+    - name: Run Trivy SCA 
+      env:
+        COMPONENT_NAME: "repo-root"
+        COMPONENT_PATH: "."
+      run: |
+        trivy fs \
+          --scanners vuln \
+          --vuln-type library \
+          --severity LOW,MEDIUM,HIGH,CRITICAL \
+          --ignore-unfixed \
+          --list-all-pkgs \
+          --skip-dirs "venv,.venv,.tox,.eggs,build,dist,__pycache__" \
+          --format table \
+          . | tee "trivy-results.txt"
+
+    
+       
