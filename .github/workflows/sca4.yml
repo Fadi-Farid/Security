@@ -1,71 +1,64 @@
-
-name: Trivy SCA (JSON report)
+name: Trivy SCA2 Scan update
 
 on:
   push:
-    branches: ["**"]
+    branches: [ "**" ]
   pull_request:
 
 permissions:
   contents: read
+  security-events: write   # required to upload SARIF to Code Scanning
   actions: read
 
 jobs:
-  sca:
-    name: Trivy SCA (fs → JSON)
+  trivy-sca:
+    name: Run Trivy SCA (dependencies)
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Cache Trivy DB
+      # (Optional) Cache for faster scans when using SBOM or large repos
+      - name: Setup cache
         uses: actions/cache@v4
         with:
           path: ~/.cache/trivy
-          key: trivy-db-${{ runner.os }}-${{ github.sha }}
+          key: trivy-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json', '**/yarn.lock', '**/poetry.lock', '**/requirements.txt', '**/go.sum', '**/pom.xml', '**/Cargo.lock', '**/Gemfile.lock') }}
           restore-keys: |
-            trivy-db-${{ runner.os }}-
+            trivy-cache-${{ runner.os }}-
 
-      - name: Install Trivy
-        shell: bash
-        run: |
-          set -euo pipefail
-          VERSION="0.51.1"
-          curl -fsSL "https://github.com/aquasecurity/trivy/releases/download/v${VERSION}/trivy_${VERSION}_Linux-64bit.tar.gz" \
-            -o trivy.tgz
-          sudo tar -C /usr/local/bin -xzf trivy.tgz trivy
-          trivy --version
+      # SCA: Scan repository (VCS mode) to detect dependency files across the repo
+      # Alternatives:
+      #   scan-type: "fs" with 'path: .' if you prefer filesystem scanning
+      - name: Run Trivy SCA (VCS mode)
+        id: trivy
+        uses: aquasecurity/trivy-action@v0.20.0
+        with:
+          scan-type: "repo"            # "repo" (VCS) or "fs"
+          ignore-unfixed: true         # ignore issues without available fixes
+          vuln-type: "library"         # SCA (library dependencies)
+          format: "sarif"              # output SARIF for Code Scanning
+          output: "trivy-results.sarif"
+          severity: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL"    # choose: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          exit-code: "1"               # fail job if findings meet severity filter
+          # Optional: customize categories visible in Code Scanning UI
+          # github-pat: ${{ secrets.GITHUB_TOKEN }} # default is sufficient
+          # trivy-config: ".trivyignore"            # if you use a .trivyignore file
+          # scanners: "vuln,secret,license"         # add 'license' if you also want license issues
+          # timeout: "10m"
 
-      - name: Run Trivy SCA (fs → JSON)
-        env:
-          COMPONENT_NAME: "repo-root"
-          COMPONENT_PATH: "."
-        run: |
-          trivy -d fs --vuln-type library
-          trivy fs \
-            --scanners vuln \
-            --vuln-type library \
-            --severity LOW,MEDIUM,HIGH,CRITICAL \
-            --ignore-unfixed \
-            --skip-dirs "venv,.venv,.tox,.eggs,build,dist,__pycache__" \
-            -f json -o "trivy-${COMPONENT_NAME}.json" \
-            "${COMPONENT_PATH}"
+      # Upload SARIF to GitHub Code Scanning
+      - name: Upload SARIF to Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+          category: trivy-sca
 
-      - name: Upload JSON artifact
+      # Also keep a downloadable artifact of the SARIF in the workflow run
+      - name: Upload SARIF as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: trivy-json
-          path: trivy-*.json
+          name: trivy-sarif
+          path: trivy-results.sarif
           if-no-files-found: error
-
-      - name: Add quick summary to job
-        run: |
-          FILE="trivy-repo-root.json"
-          if command -v jq >/dev/null 2>&1; then
-            TOTAL=$(jq '[.Results[]?.Vulnerabilities[]?] | length' "$FILE")
-            echo "### Trivy SCA (repo-root)" >> "$GITHUB_STEP_SUMMARY"
-            echo "Findings (LOW..CRITICAL): **$TOTAL**" >> "$GITHUB_STEP_SUMMARY"
-          else
-            echo "Install jq to print a summary" >> "$GITHUB_STEP_SUMMARY"
-          fi
