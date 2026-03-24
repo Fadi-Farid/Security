@@ -46,6 +46,7 @@ jobs:
             --vuln-type library \
             --severity LOW,MEDIUM,HIGH,CRITICAL \
             --ignore-unfixed \
+            --list-all-pkgs \
             --skip-dirs "venv,.venv,.tox,.eggs,build,dist,__pycache__" \
             -f json -o "trivy-${COMPONENT_NAME}.json" \
             "${COMPONENT_PATH}"
