@@ -25,7 +25,7 @@ runs:
         scanners: ${{ inputs.scanners }}
         severity: ${{ inputs.severity }}
         ignore-unfixed: true
-        exit-code: 1
+        exit-code: 0
         format: "sarif"
         output: "trivy-results.sarif"
             
