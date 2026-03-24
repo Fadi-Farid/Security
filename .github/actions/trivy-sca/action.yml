@@ -13,6 +13,10 @@ inputs:
     description: "Comma-separated list of directories to skip during the scan."
     required: false
     default: "venv,.venv,.tox,.eggs,build,dist,__pycache__"
+  skip_files:
+    description: "Comma-separated list of files to skip during the scan."
+    required: false
+    default: ""
   version:
     description: "Trivy version to install (e.g., 0.69.3). If set to 0.69.4, installation is skipped."
     required: false
@@ -53,6 +57,7 @@ runs:
           --ignore-unfixed \
           --list-all-pkgs \
           --skip-dirs "${{ inputs.skip_dirs }}" \
+          --skip-files "${{ inputs.skip_files }}" \
           --format table \
           . | tee "trivy-results.txt"
 
