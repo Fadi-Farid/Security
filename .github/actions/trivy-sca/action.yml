@@ -1,5 +1,5 @@
 name: "Trivy SCA Scan Action"
-description: "Reusable action for Trivy filesystem SCA + secret scanning"
+description: "Reusable action for Trivy filesystem SCA"
 inputs:
   severity:
     description: "Severity levels to report."
@@ -9,6 +9,11 @@ inputs:
     description: "Trivy scanners to enable (e.g., vuln,secret,config)."
     required: false
     default: "vuln,secret"
+ skip_dirs:
+    description: "Comma-separated list of directories to skip during the scan."
+    required: false
+    default: "venv,.venv,.tox,.eggs,build,dist,__pycache__"
+
 outputs:
   sarif_file:
     description: "Generated SARIF file"
@@ -33,12 +38,12 @@ runs:
         COMPONENT_PATH: "."
       run: |
         trivy fs \
-          --scanners vuln \
+          --scanners "${{ inputs.scanners }}" \
           --vuln-type library \
-          --severity LOW,MEDIUM,HIGH,CRITICAL \
+          --severity "${{ inputs.severity }}" \
           --ignore-unfixed \
           --list-all-pkgs \
-          --skip-dirs "venv,.venv,.tox,.eggs,build,dist,__pycache__" \
+          --skip-dirs "${{ inputs.skip_dirs }}" \
           --format table \
           . | tee "trivy-results.txt"
 
