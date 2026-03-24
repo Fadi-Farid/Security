@@ -40,7 +40,7 @@ jobs:
           vuln-type: "library"         # SCA (library dependencies)
           format: "sarif"              # output SARIF for Code Scanning
           output: "trivy-results.sarif"
-          severity: "CRITICAL,HIGH"    # choose: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          severity: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL"    # choose: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
           exit-code: "1"               # fail job if findings meet severity filter
           # Optional: customize categories visible in Code Scanning UI
           # github-pat: ${{ secrets.GITHUB_TOKEN }} # default is sufficient
