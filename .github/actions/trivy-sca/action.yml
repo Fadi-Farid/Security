@@ -9,7 +9,7 @@ inputs:
     description: "Trivy scanners to enable (e.g., vuln,secret,config)."
     required: false
     default: "vuln,secret"
- skip_dirs:
+  skip_dirs:
     description: "Comma-separated list of directories to skip during the scan."
     required: false
     default: "venv,.venv,.tox,.eggs,build,dist,__pycache__"
