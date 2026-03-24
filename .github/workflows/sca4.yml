@@ -62,7 +62,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: trivy-json
-          path: trivy-*.json
+          path: trivy-*.txt
           if-no-files-found: error
 
       - name: Add quick summary to job
