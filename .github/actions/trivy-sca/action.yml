@@ -29,6 +29,7 @@ runs:
       - name: Run Trivy SCA (fs → JSON)
         env:
           COMPONENT_PATH: "."
+        shell: bash
         run: |
           trivy fs \
             --scanners vuln \
