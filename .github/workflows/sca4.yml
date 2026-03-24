@@ -54,7 +54,7 @@ jobs:
             --list-all-pkgs \
             --skip-dirs "venv,.venv,.tox,.eggs,build,dist,__pycache__" \
             --format table \
-            . | tee "trivy-${COMPONENT_NAME}.txt
+            . | tee "trivy-${COMPONENT_NAME}.txt"
 
 
 
