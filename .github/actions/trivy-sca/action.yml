@@ -40,6 +40,7 @@ runs:
           sudo tar -C /usr/local/bin -xzf trivy.tgz trivy
           trivy --version    
         fi
+        
     - name: Run Trivy SCA 
       shell: bash
       env:
