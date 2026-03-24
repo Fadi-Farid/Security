@@ -13,7 +13,6 @@ inputs:
     description: "Comma-separated list of directories to skip during the scan."
     required: false
     default: "venv,.venv,.tox,.eggs,build,dist,__pycache__"
-
   version:
     description: "Trivy version to install (e.g., 0.69.3). If set to 0.69.4, installation is skipped."
     required: false
