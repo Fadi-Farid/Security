@@ -16,6 +16,7 @@ jobs:
         with:
           scanners: "vuln"
           severity: "HIGH,CRITICAL"
+          skip_dirs: "venv,.venv,.tox,.eggs,build,dist,__pycache__"
 
       - name: Upload SARIF as artifact
         uses: actions/upload-artifact@v4
