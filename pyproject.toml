@@ -1,0 +1,21 @@
+
+tool.poetry]
+name = "security-sample"
+version = "0.1.0"
+description = "Sample Python project with pinned deps for SCA demos"
+authors = ["Your Name <you@example.com>"]
+packages = [{ include = "app" }]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+flask = "3.0.2"
+requests = "2.31.0"
+sqlalchemy = "2.0.28"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "8.0.2"
+flake8 = "7.0.0"
+
+[build-system]
+requires = ["poetry-core>=1.7.0"]
+build-backend = "poetry.core.masonry.api"
