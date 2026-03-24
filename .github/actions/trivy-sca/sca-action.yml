@@ -1,0 +1,31 @@
+name: "Trivy SCA Scan Action"
+description: "Reusable action for Trivy filesystem SCA + secret scanning"
+
+inputs:
+  severity:
+    description: "Severity levels to report."
+    required: false
+    default: "HIGH,CRITICAL"
+  scanners:
+    description: "Trivy scanners to enable (e.g., vuln,secret,config)."
+    required: false
+    default: "vuln,secret"
+outputs:
+  sarif_file:
+    description: "Generated SARIF file"
+    value: trivy-results.txt
+runs:
+  using: "composite"
+  steps:
+    - name: Run Trivy SCA Scan
+      id: trivy
+      uses: aquasecurity/trivy-action@v0.20.0
+      with:
+        scan-type: "fs"
+        scanners: ${{ inputs.scanners }}
+        severity: ${{ inputs.severity }}
+        ignore-unfixed: true
+        exit-code: 0
+        format: "table"
+        output: "trivy-results.txt"
+            
