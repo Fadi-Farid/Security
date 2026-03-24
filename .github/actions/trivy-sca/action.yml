@@ -35,7 +35,7 @@ runs:
           echo "Requested version is 0.69.4 → skipping installation as requested."
         else
           echo "Installing Trivy $REQ_VERSION ..."
-          curl -fsSL "https://github.com/aquasecurity/trivy/releases/download/v${VERSION}/trivy_${REQ_VERSION}_Linux-64bit.tar.gz" \
+          curl -fsSL "https://github.com/aquasecurity/trivy/releases/download/v${REQ_VERSION}/trivy_${REQ_VERSION}_Linux-64bit.tar.gz" \
             -o trivy.tgz
           sudo tar -C /usr/local/bin -xzf trivy.tgz trivy
           trivy --version    
