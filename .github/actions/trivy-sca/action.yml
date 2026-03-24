@@ -13,7 +13,7 @@ inputs:
 outputs:
   sarif_file:
     description: "Generated SARIF file"
-    value: trivy-results.sarif
+    value: trivy-results.txt
 runs:
   using: "composite"
   steps:
