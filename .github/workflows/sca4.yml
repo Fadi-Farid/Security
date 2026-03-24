@@ -30,7 +30,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          VERSION="0.50.1"
+          VERSION="0.69.3"
           curl -fsSL "https://github.com/aquasecurity/trivy/releases/download/v${VERSION}/trivy_${VERSION}_Linux-64bit.tar.gz" \
             -o trivy.tgz
           sudo tar -C /usr/local/bin -xzf trivy.tgz trivy
