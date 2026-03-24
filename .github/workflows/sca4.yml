@@ -53,8 +53,10 @@ jobs:
             --ignore-unfixed \
             --list-all-pkgs \
             --skip-dirs "venv,.venv,.tox,.eggs,build,dist,__pycache__" \
-            -f json -o "trivy-${COMPONENT_NAME}.json" \
-            "${COMPONENT_PATH}"
+            --format table \
+            . | tee "trivy-${COMPONENT_NAME}.txt
+
+
 
       - name: Upload JSON artifact
         uses: actions/upload-artifact@v4
