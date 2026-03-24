@@ -14,8 +14,9 @@ jobs:
         id: trivy
         uses: ./.github/actions/trivy-sca   
         with:
-          scanners: "vuln"
-          severity: "HIGH,CRITICAL"
+          scanners:  "vuln"
+          severity:  "HIGH,CRITICAL"
+          version:   "0.69.3"
           skip_dirs: "venv,.venv,.tox,.eggs,build,dist,__pycache__"
 
       - name: Upload SARIF as artifact
