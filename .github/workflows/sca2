@@ -1,4 +1,4 @@
-name: Trivy SCA Scan
+name: Trivy SCA2 Scan
 
 on:
   push:
