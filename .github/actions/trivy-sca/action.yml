@@ -1,6 +1,5 @@
 name: "Trivy SCA Scan Action"
 description: "Reusable action for Trivy filesystem SCA + secret scanning"
-
 inputs:
   severity:
     description: "Severity levels to report."
@@ -14,6 +13,7 @@ outputs:
   sarif_file:
     description: "Generated SARIF file"
     value: trivy-results.txt
+    
 runs:
   using: "composite"
   steps:
