@@ -1,0 +1,24 @@
+name: 'Trivy SCA Scan'
+on:
+  push:
+  pull_request:
+
+jobs:
+  trivy-sca:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Run Trivy SCA Scan Action
+        id: trivy
+        uses: ./.github/actions/trivy-sca   
+        with:
+          scanners: "vuln"
+          severity: "HIGH,CRITICAL"
+
+      - name: Upload SARIF as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-sarif
+          path: trivy-results.txt
