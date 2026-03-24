@@ -41,6 +41,7 @@ jobs:
           COMPONENT_NAME: "repo-root"
           COMPONENT_PATH: "."
         run: |
+          trivy -d fs --vuln-type library
           trivy fs \
             --scanners vuln \
             --vuln-type library \
