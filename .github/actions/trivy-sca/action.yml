@@ -28,8 +28,8 @@ runs:
         trivy --version    
         
     - name: Run Trivy SCA 
+      shell: bash
       env:
-        COMPONENT_NAME: "repo-root"
         COMPONENT_PATH: "."
       run: |
         trivy fs \
