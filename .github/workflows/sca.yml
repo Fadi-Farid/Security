@@ -33,4 +33,12 @@ jobs:
             zap_report.json
 
 
+  - name: Publish ZAP Report link
+    if: always()
+    run: |
+      echo "## 🔐 DAST Report (OWASP ZAP)" >> $GITHUB_STEP_SUMMARY
+      echo "" >> $GITHUB_STEP_SUMMARY
+      echo "Download and open the HTML report:" >> $GITHUB_STEP_SUMMARY
+      echo "- 📄 **zap-dast-report / report_html.html**" >> $GITHUB_STEP_SUMMARY
+
 
