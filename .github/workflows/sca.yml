@@ -27,6 +27,7 @@ jobs:
 
 
       - name: zap-dast-report-${{ github.run_id }}
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: zap-dast-report
