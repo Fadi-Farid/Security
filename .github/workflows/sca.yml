@@ -44,7 +44,6 @@ jobs:
           cmd_options: "-a"
 
       - name: Upload ZAP Report
-        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: zap-dast-report
@@ -59,6 +58,8 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "The OWASP ZAP HTML report has been generated and uploaded as a workflow artifact." >> $GITHUB_STEP_SUMMARY
           echo "Download the artifact **zap-dast-report** and open \`zap_report.html\` in a browser to review the results." >> $GITHUB_STEP_SUMMARY
+          
+
 
 
 
