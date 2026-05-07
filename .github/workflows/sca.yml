@@ -31,14 +31,34 @@ jobs:
           path: |
             zap_report.html
             zap_report.json
+      - name: Prepare ZAP workspace
+        run: |
+          mkdir -p ${{ github.workspace }}/zap-reports
+          chmod 777 ${{ github.workspace }}/zap-reports
+      
+      - name: Run OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.15.0
+        with:
+          target: https://juice-shop.herokuapp.com
+          workdir: ${{ github.workspace }}/zap-reports
+          cmd_options: "-a"
 
-  
+      - name: Upload ZAP Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-dast-report
+          path: |
+            zap_report.html
+            zap_report.json
+            
       - name: Publish ZAP Report link
         if: always()
         run: |
           echo "## 🔐 DAST Report (OWASP ZAP)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Download and open the HTML report:" >> $GITHUB_STEP_SUMMARY
-          echo "- 📄 **zap-dast-report / report_html.html**" >> $GITHUB_STEP_SUMMARY
+          echo "The OWASP ZAP HTML report has been generated and uploaded as a workflow artifact." >> $GITHUB_STEP_SUMMARY
+          echo "Download the artifact **zap-dast-report** and open \`zap_report.html\` in a browser to review the results." >> $GITHUB_STEP_SUMMARY
+
 
 
