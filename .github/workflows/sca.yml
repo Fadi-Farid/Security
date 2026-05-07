@@ -2,7 +2,6 @@ name: Trivy SCA Scan   # <-- Workflow Name
 
 on:
   push:
-  pull_request:
 
 jobs:
   trivy-sca:
