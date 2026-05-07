@@ -43,7 +43,7 @@ jobs:
           workdir: ${{ github.workspace }}/zap-reports
           cmd_options: "-a"
 
-      - name: Upload ZAP Report
+      - name: zap-dast-report-${{ github.run_id }}
         uses: actions/upload-artifact@v4
         with:
           name: zap-dast-report
