@@ -17,7 +17,7 @@ jobs:
           chmod 777 ${{ github.workspace }}/zap-reports
       
       - name: Run OWASP ZAP Baseline Scan
-        uses: zaproxy/action-baseline@v0.10.0
+        uses: zaproxy/action-baseline@v0.15.0
         with:
           target: https://juice-shop.herokuapp.com
           workdir: ${{ github.workspace }}/zap-reports
