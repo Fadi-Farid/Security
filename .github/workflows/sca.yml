@@ -1,4 +1,5 @@
-name: 'Trivy SCA Scan'
+name: Trivy SCA Scan   # <-- Workflow Name
+
 on:
   push:
   pull_request:
@@ -6,26 +7,25 @@ on:
 jobs:
   trivy-sca:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      actions: read
-      security-events: write
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
 
       - name: Run Trivy SCA Scan Action
-        id: trivy
-        permissions:
-          contents: read
-          actions: read
-          security-events: write
-        uses: ./.github/actions/trivy-sca   
-        with:
-          scanners: "vuln,secret"
-          severity: "HIGH,CRITICAL"
+        uses: ./.github/actions/trivy-sca   # <-- Calling your custom action
 
-      - name: Upload SARIF to code scanning
-        uses: github/codeql-action/upload-sarif@v4 
+      - name: Run OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.10.0
         with:
-            sarif_file: ${{ steps.trivy.outputs.sarif_file }}
+          target: https://juice-shop.herokuapp.com
+          rules_file_name: zap-rules.conf
+          fail_action: true
+          cmd_options: "-a"
+      - name: Upload ZAP Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-dast-report
+          path: |
+            zap_report.html
+            zap_report.json
