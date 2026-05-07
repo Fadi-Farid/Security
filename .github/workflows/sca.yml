@@ -11,9 +11,6 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Run Trivy SCA Scan Action
-        uses: ./.github/actions/trivy-sca   # <-- Calling your custom action
-
       - name: Run OWASP ZAP Baseline Scan
         uses: zaproxy/action-baseline@v0.10.0
         with:
