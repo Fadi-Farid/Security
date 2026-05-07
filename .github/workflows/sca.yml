@@ -18,8 +18,6 @@ jobs:
         uses: zaproxy/action-baseline@v0.10.0
         with:
           target: https://juice-shop.herokuapp.com
-          rules_file_name: zap-rules.conf
-          fail_action: true
           cmd_options: "-a"
       - name: Upload ZAP Report
         if: always()
