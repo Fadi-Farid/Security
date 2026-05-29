@@ -67,7 +67,7 @@ jobs:
           line_number=$(grep -n "^For OSS Maintainers:" ${{ steps.set_output.outputs.trivy_results }} | cut -d: -f1)
           if [ -n "$line_number" ]; then
             line_number=$((line_number - 2))
-            sed -n (3,${line_number}p) ${{ steps.set_output.outputs.trivy_results }} >> $GITHUB_STEP_SUMMARY
+            sed -n "3,${line_number}p" ${{ steps.set_output.outputs.trivy_results }} >> $GITHUB_STEP_SUMMARY
           fi
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "## Trivy Scan Results" >> $GITHUB_STEP_SUMMARY
