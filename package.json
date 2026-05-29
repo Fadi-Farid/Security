@@ -1,0 +1,39 @@
+{
+  "name": "github-infrastructure",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "all": "pnpm --filter=!github-iac all",
+    "prettier": "prettier --check ./**/*.{ts,js,json,yaml,yml,md} --cache --cache-strategy content '!pnpm-lock.yaml'",
+    "prettier:fix": "prettier --write ./**/*.{ts,js,json,yaml,yml,md} --cache --cache-strategy content '!pnpm-lock.yaml'",
+    "typecheck": "pnpm --filter=!github-iac typecheck",
+    "lint": "pnpm --filter=!github-iac lint",
+    "lint:fix": "pnpm --filter=!github-iac lint:fix",
+    "package": "pnpm --filter=@ghi/*-action run package",
+    "test": "pnpm --filter=!github-iac test",
+    "test:integration:ghes": "pnpm --filter=@ghi/ghes-vfde-* test:integration",
+    "test:integration:ghec": "pnpm --filter=@ghi/ghec-vfde-* test:integration",
+    "synth": "pnpm --filter=@ghi/ghe*-vfde-* synth",
+    "render:stack-dependencies": "pnpm --filter=@ghi/render-templates start stack-dependencies",
+    "render:infra-change-detection": "pnpm --filter=@ghi/render-templates start infra-change-detection && pnpm prettier:fix",
+    "render:cd": "pnpm --filter=@ghi/render-templates start cd && pnpm prettier:fix",
+    "generate-workflows": "pnpm --filter=@ghi/generate-workflows start",
+    "docs:build": "pnpm --filter @ghi/docs build",
+    "docs:start": "pnpm --filter @ghi/docs start",
+    "precommit": "lint-staged",
+    "prepare": "git config core.hooksPath git_hooks"
+  },
+  "engines": {
+    "node": ">=20.0",
+    "pnpm": ">=9.15.4"
+  },
+  "devDependencies": {
+    "lint-staged": "15.5.2",
+    "prettier": "3.8.1"
+  },
+  "lint-staged": {
+    "*.{ts,js,json,yaml,yml}": [
+      "pnpm prettier:fix"
+    ]
+  }
+}
