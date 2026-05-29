@@ -36,15 +36,15 @@ jobs:
         run: |
           set -euo pipefail
           trivy fs \
-            --scanners "${{ inputs.scanners }}" \
-            --vuln-type library \
-            --severity "${{ inputs.severity }}" \
-            --ignore-unfixed \
-            --list-all-pkgs \
-            --skip-dirs "${{ inputs.skip_dirs }}" \
-            --skip-files "${{ inputs.skip_files }}" \
-            --format table \
-            . | tee "trivy-results.txt"
+             --scanners "vuln" \
+             --vuln-type library \
+             --severity "LOW,MEDIUM,HIGH,CRITICAL" \
+             --ignore-unfixed \
+             --list-all-pkgs \
+             --skip-dirs "build,dist" \
+             --skip-files "" \
+             --format table \
+             . | tee "trivy-results.txt"
   
       - name: Set output
         id: set_output
