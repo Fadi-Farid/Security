@@ -17,6 +17,75 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Install Trivy
+      shell: bash
+      run: |
+        set -euo pipefail
+        REQ_VERSION="${{ inputs.version }}"
+        if [[ "$REQ_VERSION" == "0.69.4" ]]; then
+          echo "Requested version is 0.69.4 → ❌ skipping installation as 0.69.4 isn't allowed."
+          exit 1
+        else
+          echo "Installing Trivy $REQ_VERSION ..."
+          curl -fsSL "https://github.com/aquasecurity/trivy/releases/download/v${REQ_VERSION}/trivy_${REQ_VERSION}_Linux-64bit.tar.gz" \
+            -o trivy.tgz
+          INSTALL_DIR="$HOME/.local/bin"
+          mkdir -p "$INSTALL_DIR"
+          tar -xzf trivy.tgz -C "$INSTALL_DIR"
+          trivy --version
+        fi
+
+    - name: Run Trivy SCA
+      shell: bash
+      if: ${{ inputs.version != '0.69.4' }}
+      env:
+        COMPONENT_PATH: '.'
+      run: |
+        set -euo pipefail
+        trivy fs \
+          --scanners "${{ inputs.scanners }}" \
+          --vuln-type library \
+          --severity "${{ inputs.severity }}" \
+          --ignore-unfixed \
+          --list-all-pkgs \
+          --skip-dirs "${{ inputs.skip_dirs }}" \
+          --skip-files "${{ inputs.skip_files }}" \
+          --format table \
+          . | tee "trivy-results.txt"
+
+    - name: Set output
+      id: set_output
+      shell: bash
+      if: ${{ inputs.version != '0.69.4' }}
+      run: |
+        set -euo pipefail
+        echo "trivy_results=trivy-results.txt" >> $GITHUB_OUTPUT
+
+    - name: Add Trivy table to Summary
+      if: ${{ inputs.add_summary != 'false' && steps.set_output.outputs.trivy_results != '' }}
+      shell: bash
+      run: |
+        echo "## Trivy Report Summary" >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        sed -n '3,11p' ${{ steps.set_output.outputs.trivy_results }} >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        echo "## Trivy Scan Results" >> $GITHUB_STEP_SUMMARY
+        TOTAL=$(grep -oE 'Total:[[:space:]]*[0-9]+' ${{ steps.set_output.outputs.trivy_results }} | head -1 | grep -oE '[0-9]+' || true)
+        if [ -z "$TOTAL" ]; then
+          echo "<span style='color:orange'>⚠️ No files are required to be scaned for SCA </span>" >> $GITHUB_STEP_SUMMARY
+        elif [ "$TOTAL" -eq 0 ]; then
+          echo "<span style='color:green'>✅ **No vulnerabilities found** </span>" >> $GITHUB_STEP_SUMMARY
+        elif [ "$TOTAL" -ne 0 ]; then
+          echo "<span style='color:red'>❌ **Total vulnerabilities :** $TOTAL</span>" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "<span style='color:orange'>⚠️ File formate is changed </span>" >> $GITHUB_STEP_SUMMARY
+        fi
+        echo "<details><summary>Full Trivy Output</summary>" >> $GITHUB_STEP_SUMMARY
+        echo "<pre>" >> $GITHUB_STEP_SUMMARY
+        tail -n +25 ${{ steps.set_output.outputs.trivy_results }} >> $GITHUB_STEP_SUMMARY 
+        echo "</pre>" >> $GITHUB_STEP_SUMMARY
+        echo "</details>" >> $GITHUB_STEP_SUMMARY
+
     - name: Run Trivy SCA Scan
       id: trivy
       uses: aquasecurity/trivy-action@v0.20.0
