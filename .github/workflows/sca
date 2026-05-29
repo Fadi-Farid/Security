@@ -1,4 +1,4 @@
-name: 'Trivy SCA Scan'
+name: 'Trivy SCA Scan dispatch'
 on:
   push:
   pull_request:
