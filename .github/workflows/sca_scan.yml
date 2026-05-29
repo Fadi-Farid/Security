@@ -4,7 +4,7 @@ on:
   pull_request:
 
 jobs:
-  trivy-sca:
+  trivy-sca5:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source
