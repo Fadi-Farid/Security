@@ -2,6 +2,7 @@ name: 'Trivy SCA Scan'
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 jobs:
   trivy-sca:
