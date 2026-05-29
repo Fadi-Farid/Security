@@ -76,7 +76,9 @@ jobs:
           fi
           echo "<details><summary>Full Trivy Output</summary>" >> $GITHUB_STEP_SUMMARY
           echo "<pre>" >> $GITHUB_STEP_SUMMARY
-          tail -n +25 ${{ steps.set_output.outputs.trivy_results }} >> $GITHUB_STEP_SUMMARY 
+          line_number=$((line_number +9 ))
+          echo "Legend found at line: $line_number"
+          tail -n +${line_number} ${{ steps.set_output.outputs.trivy_results }} >> $GITHUB_STEP_SUMMARY 
           echo "</pre>" >> $GITHUB_STEP_SUMMARY
           echo "</details>" >> $GITHUB_STEP_SUMMARY
   
