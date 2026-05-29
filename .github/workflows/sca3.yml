@@ -76,3 +76,11 @@ jobs:
           tail -n +25 ${{ steps.set_output.outputs.trivy_results }} >> $GITHUB_STEP_SUMMARY 
           echo "</pre>" >> $GITHUB_STEP_SUMMARY
           echo "</details>" >> $GITHUB_STEP_SUMMARY
+  
+      - name: Upload trivy-results as artifact
+        if: ${{ inputs.upload_artifact != 'false' && steps.set_output.outputs.trivy_results != '' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: trivy-results
+          path: ${{ steps.set_output.outputs.trivy_results }}
+          retention-days: 1
