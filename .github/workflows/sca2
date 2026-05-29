@@ -11,7 +11,7 @@ permissions:
   actions: read
 
 jobs:
-  trivy-sca:
+  trivy-sca2:
     name: Run Trivy SCA (dependencies)
     runs-on: ubuntu-latest
 
