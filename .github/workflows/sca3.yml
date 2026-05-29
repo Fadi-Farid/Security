@@ -58,7 +58,7 @@ jobs:
         run: |
           echo "## Trivy Report Summary" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          line_number=$(grep -n "^For OSS Maintainers:" ${{ steps.set_output.outputs.trivy_results }} | cut -d: -f1)
+          line_number=`$(grep -n "^For OSS Maintainers:" ${{ steps.set_output.outputs.trivy_results }} | cut -d: -f1) - 2 `
           echo "Legend found at line: $line_number"
           sed -n "3,${line_number}p" ${{ steps.set_output.outputs.trivy_results }} >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
