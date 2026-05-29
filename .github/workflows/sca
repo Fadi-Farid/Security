@@ -2,7 +2,6 @@ name: 'Trivy SCA Scan dispatch'
 on:
   push:
   pull_request:
-  workflow_dispatch:
 
 jobs:
   trivy-sca:
