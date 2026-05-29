@@ -59,9 +59,10 @@ jobs:
           echo "## Trivy Report Summary" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           line_number=$(grep -n "^For OSS Maintainers:" ${{ steps.set_output.outputs.trivy_results }} | cut -d: -f1)
-          line_number=$((line_number - 2))
-          echo "Legend found at line: $line_number"
-          sed -n "3,${line_number}p" ${{ steps.set_output.outputs.trivy_results }} >> $GITHUB_STEP_SUMMARY
+          if [ -n "$line_number" ]; then
+            line_number=$((line_number - 2))
+            sed -n "3,${line_number}p" ${{ steps.set_output.outputs.trivy_results }} >> $GITHUB_STEP_SUMMARY
+          fi
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "## Trivy Scan Results" >> $GITHUB_STEP_SUMMARY
           TOTAL=$(grep -oE 'Total:[[:space:]]*[0-9]+' ${{ steps.set_output.outputs.trivy_results }} | head -1 | grep -oE '[0-9]+' || true)
@@ -76,9 +77,10 @@ jobs:
           fi
           echo "<details><summary>Full Trivy Output</summary>" >> $GITHUB_STEP_SUMMARY
           echo "<pre>" >> $GITHUB_STEP_SUMMARY
-          line_number=$((line_number +9 ))
-          echo "Legend found at line: $line_number"
-          tail -n +${line_number} ${{ steps.set_output.outputs.trivy_results }} >> $GITHUB_STEP_SUMMARY 
+          if [ -n "$line_number" ]; then
+            line_number=$((line_number +9 ))
+            tail -n +${line_number} ${{ steps.set_output.outputs.trivy_results }} >> $GITHUB_STEP_SUMMARY 
+          fi
           echo "</pre>" >> $GITHUB_STEP_SUMMARY
           echo "</details>" >> $GITHUB_STEP_SUMMARY
   
