@@ -1,12 +1,11 @@
-name: Trivy SCA 
+name: 'Trivy SCA Scan'
 on:
   push:
   pull_request:
 
-
 jobs:
-  sca:
+  trivy-sca3:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout source
         uses: actions/checkout@v4
