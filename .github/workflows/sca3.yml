@@ -14,7 +14,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          REQ_VERSION="${{ inputs.version }}"
+          REQ_VERSION="0.69.3"
           if [[ "$REQ_VERSION" == "0.69.4" ]]; then
             echo "Requested version is 0.69.4 → ❌ skipping installation as 0.69.4 isn't allowed."
             exit 1
