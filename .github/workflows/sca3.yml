@@ -27,7 +27,12 @@ jobs:
             tar -xzf trivy.tgz -C "$INSTALL_DIR"
             trivy --version
           fi
-  
+      - name: Cache Trivy DB
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/trivy
+          key: trivy- -${{ runner.os }}
+          
       - name: Run Trivy SCA
         shell: bash
         if: ${{ inputs.version != '0.69.4' }}
@@ -43,9 +48,10 @@ jobs:
              --list-all-pkgs \
              --skip-dirs "build,dist" \
              --skip-files "" \
+             --cache-dir ~/.cache/trivy \
              --format table \
              . | tee "trivy-results.txt"
-  
+          
       - name: Set output
         id: set_output
         shell: bash
@@ -61,7 +67,7 @@ jobs:
           line_number=$(grep -n "^For OSS Maintainers:" ${{ steps.set_output.outputs.trivy_results }} | cut -d: -f1)
           if [ -n "$line_number" ]; then
             line_number=$((line_number - 2))
-            sed -n "3,${line_number}p" ${{ steps.set_output.outputs.trivy_results }} >> $GITHUB_STEP_SUMMARY
+            sed -n (3,${line_number}p) ${{ steps.set_output.outputs.trivy_results }} >> $GITHUB_STEP_SUMMARY
           fi
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "## Trivy Scan Results" >> $GITHUB_STEP_SUMMARY
