@@ -50,7 +50,7 @@ jobs:
              --skip-files "" \
              --cache-dir ~/.cache/trivy \
              --format table \
-             . | tee "trivy-results.txt"
+             "$COMPONENT_PATH" | tee "trivy-results.txt"
           
       - name: Set output
         id: set_output
