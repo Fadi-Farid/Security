@@ -46,38 +46,24 @@ jobs:
       - name: Publish ZAP Summary
         if: always()
         run: |
-          echo "## 🔐 ZAP Report" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "📄 Full interactive report available as artifact:" >> $GITHUB_STEP_SUMMARY
-          echo "- Download **zap-dast-report**" >> $GITHUB_STEP_SUMMARY
-          echo "- Open \`zap_report.html\` in your browser" >> $GITHUB_STEP_SUMMARY
+          echo "<h2>🔐 OWASP ZAP Report</h2>" >> $GITHUB_STEP_SUMMARY
+          echo "<p>✅ Full interactive HTML report available:</p>" >> $GITHUB_STEP_SUMMARY
+          echo "<ul>" >> $GITHUB_STEP_SUMMARY
+          echo "<li>Download artifact: <b>zap-dast-report</b></li>" >> $GITHUB_STEP_SUMMARY
+          echo "<li>Open <code>zap_report.html</code> in your browser</li>" >> $GITHUB_STEP_SUMMARY
+          echo "</ul>" >> $GITHUB_STEP_SUMMARY
 
 
-      - name: Publish ZAP Summary
+
+      
+      - name: Show partial HTML report
         if: always()
         run: |
-          echo "## 🔐 DAST Report (OWASP ZAP)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "<details><summary><b>🔎 View Partial HTML Report</b></summary>" >> $GITHUB_STEP_SUMMARY
+          echo "<br>" >> $GITHUB_STEP_SUMMARY
       
-          if [ ! -f zap_report.json ]; then
-            echo "⚠️ No ZAP report found." >> $GITHUB_STEP_SUMMARY
-            exit 0
-          fi
+          # Extract body (basic)
+          sed -n '/<body>/,/<\/body>/p' zap-reports/zap_report.html | head -200 >> $GITHUB_STEP_SUMMARY
       
-          HIGH=$(jq '[.site[].alerts[] | select(.riskdesc | startswith("High"))] | length' zap_report.json)
-          MEDIUM=$(jq '[.site[].alerts[] | select(.riskdesc | startswith("Medium"))] | length' zap_report.json)
-          LOW=$(jq '[.site[].alerts[] | select(.riskdesc | startswith("Low"))] | length' zap_report.json)
-          INFO=$(jq '[.site[].alerts[] | select(.riskdesc | startswith("Informational"))] | length' zap_report.json)
-      
-          echo "| Severity | Count |" >> $GITHUB_STEP_SUMMARY
-          echo "|----------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| 🔴 High | $HIGH |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🟠 Medium | $MEDIUM |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🟡 Low | $LOW |" >> $GITHUB_STEP_SUMMARY
-          echo "| ℹ️ Info | $INFO |" >> $GITHUB_STEP_SUMMARY
-      
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "📄 Download **zap-dast-report** artifact for full HTML report." >> $GITHUB_STEP_SUMMARY
-      
-      
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
 
