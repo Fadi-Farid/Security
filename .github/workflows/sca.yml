@@ -41,7 +41,7 @@ jobs:
           echo "## 🔐 DAST Report (OWASP ZAP)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "The OWASP ZAP HTML report has been generated and uploaded as a workflow artifact." >> $GITHUB_STEP_SUMMARY
-          echo "Download the artifact **zap-dast-report** and open \`zap_report.html\` in a browser to review the results." >> $GITHUB_STEP_SUMMARY
+          echo "Download the artifact **zap-dast-report** and open \`zap-reports/zap_report.html\` in a browser to review the results." >> $GITHUB_STEP_SUMMARY
           
       - name: Publish ZAP Summary
         if: always()
@@ -50,7 +50,7 @@ jobs:
           echo "<p>✅ Full interactive HTML report available:</p>" >> $GITHUB_STEP_SUMMARY
           echo "<ul>" >> $GITHUB_STEP_SUMMARY
           echo "<li>Download artifact: <b>zap-dast-report</b></li>" >> $GITHUB_STEP_SUMMARY
-          echo "<li>Open <code>zap_report.html</code> in your browser</li>" >> $GITHUB_STEP_SUMMARY
+          echo "<li>Open <code>zap-reports/zap_report.html</code> in your browser</li>" >> $GITHUB_STEP_SUMMARY
           echo "</ul>" >> $GITHUB_STEP_SUMMARY
 
 
@@ -85,7 +85,7 @@ jobs:
           echo "<p>📄 Full report:</p>" >> $GITHUB_STEP_SUMMARY
           echo "<ul>" >> $GITHUB_STEP_SUMMARY
           echo "<li>Download artifact: <b>zap-dast-report</b></li>" >> $GITHUB_STEP_SUMMARY
-          echo "<li>Open <code>zap_report.html</code></li>" >> $GITHUB_STEP_SUMMARY
+          echo "<li>Open <code>zap-reports/zap_report.html</code></li>" >> $GITHUB_STEP_SUMMARY
           echo "</ul>" >> $GITHUB_STEP_SUMMARY
 
         
@@ -94,7 +94,7 @@ jobs:
         run: |
           echo "<h2>🔐 DAST Report (OWASP ZAP)</h2>" >> $GITHUB_STEP_SUMMARY
       
-          if [ ! -f zap_report.json ]; then
+          if [ ! -f zap-reports/zap_report.json ]; then
             echo "<p>⚠️ No ZAP report found.</p>" >> $GITHUB_STEP_SUMMARY
             exit 0
           fi
