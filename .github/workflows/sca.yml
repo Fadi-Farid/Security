@@ -45,5 +45,31 @@ jobs:
           
 
 
-
+      - name: Publish ZAP Summary
+        if: always()
+        run: |
+          echo "## 🔐 DAST Report (OWASP ZAP)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+      
+          if [ ! -f zap_report.json ]; then
+            echo "⚠️ No ZAP report found." >> $GITHUB_STEP_SUMMARY
+            exit 0
+          fi
+      
+          HIGH=$(jq '[.site[].alerts[] | select(.riskdesc | startswith("High"))] | length' zap_report.json)
+          MEDIUM=$(jq '[.site[].alerts[] | select(.riskdesc | startswith("Medium"))] | length' zap_report.json)
+          LOW=$(jq '[.site[].alerts[] | select(.riskdesc | startswith("Low"))] | length' zap_report.json)
+          INFO=$(jq '[.site[].alerts[] | select(.riskdesc | startswith("Informational"))] | length' zap_report.json)
+      
+          echo "| Severity | Count |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔴 High | $HIGH |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🟠 Medium | $MEDIUM |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🟡 Low | $LOW |" >> $GITHUB_STEP_SUMMARY
+          echo "| ℹ️ Info | $INFO |" >> $GITHUB_STEP_SUMMARY
+      
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📄 Download **zap-dast-report** artifact for full HTML report." >> $GITHUB_STEP_SUMMARY
+      
+      
 
