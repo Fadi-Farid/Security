@@ -43,6 +43,14 @@ jobs:
           echo "The OWASP ZAP HTML report has been generated and uploaded as a workflow artifact." >> $GITHUB_STEP_SUMMARY
           echo "Download the artifact **zap-dast-report** and open \`zap_report.html\` in a browser to review the results." >> $GITHUB_STEP_SUMMARY
           
+      - name: Publish ZAP Summary
+        if: always()
+        run: |
+          echo "## 🔐 ZAP Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📄 Full interactive report available as artifact:" >> $GITHUB_STEP_SUMMARY
+          echo "- Download **zap-dast-report**" >> $GITHUB_STEP_SUMMARY
+          echo "- Open \`zap_report.html\` in your browser" >> $GITHUB_STEP_SUMMARY
 
 
       - name: Publish ZAP Summary
