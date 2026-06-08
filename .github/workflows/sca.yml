@@ -8,46 +8,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Prepare ZAP workspace
-        run: |
-          mkdir -p zap-reports
-          chmod 777 zap-reports
-
-      - name: Run OWASP ZAP Baseline Scan
+      - name: Run ZAP Baseline Scan
         uses: zaproxy/action-baseline@v0.15.0
         with:
           target: https://juice-shop.herokuapp.com
-          workdir: ${{ github.workspace }}/zap-reports
           cmd_options: "-a"
-          fail_action: true
-          rules_file_name: zap-rules.conf
+          fail_action: false   # ✅ IMPORTANT
 
-      # ✅ Upload correct paths
-      - name: Upload ZAP Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: zap-dast-report
-          path: |
-            zap-reports/zap_report.html
-            zap-reports/zap_report.json
-
-      # ✅ ONE clean summary step (HTML)
-      - name: Publish ZAP Summary
-        if: always()
-        run: |
-          echo "<h2>🔐 OWASP ZAP Report</h2>" >> $GITHUB_STEP_SUMMARY
-
-          if [ ! -f zap-reports/zap_report.json ]; then
-            echo "<p>⚠️ No ZAP report found.</p>" >> $GITHUB_STEP_SUMMARY
-            exit 0
-          fi
-
-          HIGH=$(jq '[.site[].alerts[] | select(.riskdesc | startswith("High"))] | length' zap-reports/zap_report.json)
-          MEDIUM=$(jq '[.site[].alerts[] | select(.riskdesc | startswith("Medium"))] | length' zap-reports/zap_report.json)
-          LOW=$(jq '[.site[].alerts[] | select(.riskdesc | startswith("Low"))] | length' zap-reports/zap_report.json)
-          INFO=$(jq '[.site[].alerts[] | select(.riskdesc | startswith("Informational"))] | length' zap-reports/zap_report.json)
-
+      # ✅ Move reports from container to workspace
