@@ -59,4 +59,4 @@ jobs:
           echo "</table>" >> $GITHUB_STEP_SUMMARY
 
           echo "<p>📄 Download artifact <b>zap-dast-report</b> to view HTML report.</p>" >> $GITHUB_STEP_SUMMARY
-``
+ 
