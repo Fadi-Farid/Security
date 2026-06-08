@@ -88,4 +88,31 @@ jobs:
           echo "<li>Open <code>zap_report.html</code></li>" >> $GITHUB_STEP_SUMMARY
           echo "</ul>" >> $GITHUB_STEP_SUMMARY
 
+        
+      - name: Publish ZAP Summary (HTML)
+        if: always()
+        run: |
+          echo "<h2>🔐 DAST Report (OWASP ZAP)</h2>" >> $GITHUB_STEP_SUMMARY
+      
+          if [ ! -f zap_report.json ]; then
+            echo "<p>⚠️ No ZAP report found.</p>" >> $GITHUB_STEP_SUMMARY
+            exit 0
+          fi
+      
+          HIGH=$(jq '[.site[].alerts[] | select(.riskdesc | startswith("High"))] | length' zap-reports/zap_report.json)
+          MEDIUM=$(jq '[.site[].alerts[] | select(.riskdesc | startswith("Medium"))] | length' zap-reports/zap_report.json)
+          LOW=$(jq '[.site[].alerts[] | select(.riskdesc | startswith("Low"))] | length' zap-reports/zap_report.json)
+          INFO=$(jq '[.site[].alerts[] | select(.riskdesc | startswith("Informational"))] | length' zap-reports/zap_report.json)
+      
+          echo "<table>" >> $GITHUB_STEP_SUMMARY
+          echo "<tr><th>Severity</th><th>Count</th></tr>" >> $GITHUB_STEP_SUMMARY
+          echo "<tr><td>🔴 High</td><td>$HIGH</td></tr>" >> $GITHUB_STEP_SUMMARY
+          echo "<tr><td>🟠 Medium</td><td>$MEDIUM</td></tr>" >> $GITHUB_STEP_SUMMARY
+          echo "<tr><td>🟡 Low</td><td>$LOW</td></tr>" >> $GITHUB_STEP_SUMMARY
+          echo "<tr><td>ℹ️ Info</td><td>$INFO</td></tr>" >> $GITHUB_STEP_SUMMARY
+          echo "</table>" >> $GITHUB_STEP_SUMMARY
+      
+          echo "<p>📄 Download <b>zap-dast-report</b> artifact to view the full HTML report.</p>" >> $GITHUB_STEP_SUMMARY
+      
+
 
