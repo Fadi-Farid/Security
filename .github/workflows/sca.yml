@@ -19,3 +19,44 @@ jobs:
           fail_action: false   # ✅ IMPORTANT
 
       # ✅ Move reports from container to workspace
+      - name: Prepare reports
+        if: always()
+        run: |
+          mkdir -p zap-reports
+          cp -r /home/runner/work/_temp/_github_home/.ZAP/* zap-reports/ || true
+          ls -R zap-reports || true
+
+      # ✅ Upload reports
+      - name: Upload ZAP report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-dast-report
+          path: zap-reports/
+
+      # ✅ Summary (based on JSON if available)
+      - name: Publish Summary
+        if: always()
+        run: |
+          echo "<h2>🔐 OWASP ZAP Report</h2>" >> $GITHUB_STEP_SUMMARY
+
+          FILE=$(find zap-reports -name "zap_report.json" | head -1)
+
+          if [ -z "$FILE" ]; then
+            echo "<p>⚠️ No ZAP report found.</p>" >> $GITHUB_STEP_SUMMARY
+            exit 0
+          fi
+
+          HIGH=$(jq '[.site[].alerts[] | select(.riskdesc | startswith("High"))] | length' "$FILE")
+          MEDIUM=$(jq '[.site[].alerts[] | select(.riskdesc | startswith("Medium"))] | length' "$FILE")
+          LOW=$(jq '[.site[].alerts[] | select(.riskdesc | startswith("Low"))] | length' "$FILE")
+
+          echo "<table>" >> $GITHUB_STEP_SUMMARY
+          echo "<tr><th>Severity</th><th>Count</th></tr>" >> $GITHUB_STEP_SUMMARY
+          echo "<tr><td>🔴 High</td><td>$HIGH</td></tr>" >> $GITHUB_STEP_SUMMARY
+          echo "<tr><td>🟠 Medium</td><td>$MEDIUM</td></tr>" >> $GITHUB_STEP_SUMMARY
+          echo "<tr><td>🟡 Low</td><td>$LOW</td></tr>" >> $GITHUB_STEP_SUMMARY
+          echo "</table>" >> $GITHUB_STEP_SUMMARY
+
+          echo "<p>📄 Download artifact <b>zap-dast-report</b> to view HTML report.</p>" >> $GITHUB_STEP_SUMMARY
+``
