@@ -63,7 +63,7 @@ jobs:
           echo "<br>" >> $GITHUB_STEP_SUMMARY
       
           # Extract body (basic)
-          sed -n '/<body>/,/<\/body>/p' zap-reports/zap_report.html | head -200 >> $GITHUB_STEP_SUMMARY
+          sed -n '/<body>/,/<\/body>/p' zap_report.html | head -200 >> $GITHUB_STEP_SUMMARY
       
           echo "</details>" >> $GITHUB_STEP_SUMMARY
       
@@ -73,7 +73,7 @@ jobs:
           echo "## 📄 ZAP Report (Extract)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
       
-          sed 's/<[^>]*>//g' zap-reports/zap_report.html | head -200 >> $GITHUB_STEP_SUMMARY
+          sed 's/<[^>]*>//g' zap_report.html | head -200 >> $GITHUB_STEP_SUMMARY
       
       
       - name: Publish ZAP Summary (HTML)
