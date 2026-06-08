@@ -66,4 +66,26 @@ jobs:
           sed -n '/<body>/,/<\/body>/p' zap-reports/zap_report.html | head -200 >> $GITHUB_STEP_SUMMARY
       
           echo "</details>" >> $GITHUB_STEP_SUMMARY
+      
+                
+      - name: Extract readable content
+        run: |
+          echo "## 📄 ZAP Report (Extract)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+      
+          sed 's/<[^>]*>//g' zap-reports/zap_report.html | head -200 >> $GITHUB_STEP_SUMMARY
+      
+      
+      - name: Publish ZAP Summary (HTML)
+        run: |
+          echo "<h2>🔐 OWASP ZAP Report</h2>" >> $GITHUB_STEP_SUMMARY
+      
+          echo "<p><b>Quick summary available below.</b></p>" >> $GITHUB_STEP_SUMMARY
+      
+          echo "<p>📄 Full report:</p>" >> $GITHUB_STEP_SUMMARY
+          echo "<ul>" >> $GITHUB_STEP_SUMMARY
+          echo "<li>Download artifact: <b>zap-dast-report</b></li>" >> $GITHUB_STEP_SUMMARY
+          echo "<li>Open <code>zap_report.html</code></li>" >> $GITHUB_STEP_SUMMARY
+          echo "</ul>" >> $GITHUB_STEP_SUMMARY
+
 
