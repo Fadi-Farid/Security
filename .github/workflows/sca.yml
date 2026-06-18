@@ -26,13 +26,19 @@ jobs:
           cp -r /home/runner/work/_temp/_github_home/.ZAP/* zap-reports/ || true
           ls -R zap-reports || true
 
-      # ✅ Upload reports
-      - name: Upload ZAP report
-        if: always()
-        uses: actions/upload-artifact@v4
+      - name: Run ZAP baseline (custom action)
+        uses: ./.github/actions/zap-type   # ✅ your local action
         with:
-          name: zap-dast-report
-          path: zap-reports/
+          zap-version: "stable"
+          rules-file-name: "rules.conf"
+
+      # ✅ Upload reports
+      # - name: Upload ZAP report
+        # if: always()
+        # uses: actions/upload-artifact@v4
+        # with:
+        #   name: zap-dast-report
+        #   path: zap-reports/
 
       # ✅ Summary (based on JSON if available)
       - name: Publish Summary
