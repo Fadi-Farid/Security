@@ -11,12 +11,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Run ZAP Baseline Scan
-        uses: zaproxy/action-baseline@v0.15.0
-        with:
-          target: https://juice-shop.herokuapp.com
-          cmd_options: "-a"
-          fail_action: false   # ✅ IMPORTANT
+      # - name: Run ZAP Baseline Scan
+      #   uses: zaproxy/action-baseline@v0.15.0
+      #   with:
+      #     target: https://juice-shop.herokuapp.com
+      #     cmd_options: "-a"
+      #     fail_action: false   # ✅ IMPORTANT
+
+      # - name: Install OWASP ZAP
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y zaproxy
+
 
       # ✅ Move reports from container to workspace
       - name: Prepare reports
@@ -29,16 +35,15 @@ jobs:
       - name: Run ZAP baseline (custom action)
         uses: ./.github/actions/zap-type   # ✅ your local action
         with:
-          zap-version: "stable"
+          target: "https://example.com"
           rules-file-name: "rules.conf"
 
-      # ✅ Upload reports
-      # - name: Upload ZAP report
-        # if: always()
-        # uses: actions/upload-artifact@v4
-        # with:
-        #   name: zap-dast-report
-        #   path: zap-reports/
+      - name: Upload ZAP report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-dast-report
+          path: zap-reports/
 
       # ✅ Summary (based on JSON if available)
       - name: Publish Summary
