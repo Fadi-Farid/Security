@@ -51,7 +51,7 @@ jobs:
         run: |
           echo "<h2>🔐 OWASP ZAP Report</h2>" >> $GITHUB_STEP_SUMMARY
 
-          FILE=$(find zap-reports -name "zap_report.json" | head -1)
+          FILE="zap-reports/report.html"
 
           if [ -z "$FILE" ]; then
             echo "<p>⚠️ No ZAP report found.</p>" >> $GITHUB_STEP_SUMMARY
