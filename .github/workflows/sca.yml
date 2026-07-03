@@ -113,7 +113,7 @@ jobs:
           
           jq -r '
           .site[].alerts[]
-          | select($FILTER
+          | select($FILTER)
           | [.riskcode, .alert, .count]
           | @tsv
           ' "$FILE" |
