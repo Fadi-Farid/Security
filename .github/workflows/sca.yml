@@ -86,7 +86,7 @@ jobs:
         if: always()
         run: |
          
-         THRESHOLD="high"
+         THRESHOLD="medium"
           echo "${THRESHOLD,,}" 
           FILE="zap-reports/report.json"
 
