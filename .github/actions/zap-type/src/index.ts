@@ -1,72 +1,3 @@
-
-// import * as core from '@actions/core';
-// import * as exec from '@actions/exec';
-// import * as fs from 'fs';
-
-// async function run(): Promise<void> {
-//   try {
-//     const target = core.getInput('target');
-
-//     if (!target) {
-//       core.setFailed('target is required');
-//       return;
-//     }
-
-//     // Ensure reports dir exists
-//     if (!fs.existsSync('zap-reports')) {
-//       fs.mkdirSync('zap-reports');
-//     }
-
-//     // Start ZAP in daemon mode
-//     await exec.exec('zap.sh', [
-//       '-daemon',
-//       '-port', '8080',
-//       '-config', 'api.disablekey=true'
-//     ]);
-
-//     // Run baseline scan via CLI script
-//     await exec.exec('zap-baseline.py', [
-//       '-t', target,
-//       '-r', 'zap-reports/report.html'
-//     ]);
-
-//   } catch (error) {
-//     core.setFailed(error instanceof Error ? error.message : String(error));
-//   }
-// }
-
-// run();
-
-
-// import * as core from '@actions/core';
-// import * as exec from '@actions/exec';
-
-// import * as fs from 'fs';
-// import * as path from 'path';
-
-// async function run(): Promise<void> {
-//   try {
-//     const zapVersion = core.getInput('zap-version');
-//     const rules = core.getInput('rules-file-name');
-
-//     // Ensure ZAP writes to zap-reports folder
-//     await exec.exec('docker', [
-//       'run',
-//       '--rm',
-//       '-v', `${process.cwd()}/zap-reports:/zap/wrk`,
-//       'zaproxy/zap-stable',
-//       'zap-baseline.py',
-//       '-r', 'report.html'
-//     ]);
-
-//   } catch (error) {
-//     core.setFailed(error instanceof Error ? error.message : String(error));
-//   }
-// }
-
-// run();
-
-
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import * as fs from 'fs';
@@ -74,54 +5,51 @@ import * as path from 'path';
 
 async function run(): Promise<void> {
   try {
-    // ✅ Inputs
+    // Inputs
     const target = core.getInput('target');
     const dockerImage = core.getInput('docker_name') || 'zaproxy/zap-stable';
     const rulesFile = core.getInput('rules_file_name');
     const cmdOptions = core.getInput('cmd_options');
 
-    // ✅ Validate required input
+    // Validate required input
     if (!target) {
       core.setFailed('Input "target" is required');
       return;
     }
 
- 
-
-// ✅ FIX permissions
-
-    // ✅ Ensure reports directory exists
+    // Ensure reports directory exists and is writable
     const reportsDir = path.join(process.cwd(), 'zap-reports');
     if (!fs.existsSync(reportsDir)) {
-      fs.mkdirSync(reportsDir);
+      fs.mkdirSync(reportsDir, { recursive: true });
     }
-fs.chmodSync(reportsDir, 0o777);
+    try {
+      fs.chmodSync(reportsDir, 0o777);
+    } catch (chmodErr) {
+      core.warning(`Could not chmod reports dir: ${chmodErr instanceof Error ? chmodErr.message : String(chmodErr)}`);
+    }
 
-    // ✅ Build ZAP arguments
+    // Build ZAP arguments
     const zapArgs: string[] = [
       'zap-baseline.py',
       '-t', target,
       '-r', 'report.html',
-      '-J', 'report.json' 
+      '-J', 'report.json'
     ];
 
-    // ✅ Optional: rules file
     if (rulesFile) {
       zapArgs.push('-c', rulesFile);
     }
-
-    // ✅ Optional: custom options
     if (cmdOptions) {
       zapArgs.push(...cmdOptions.split(' '));
     }
 
-    // ✅ Debug output (VERY important for CI)
-    core.info(`Running ZAP baseline scan`);
+    // Debug output
+    core.info('Running ZAP baseline scan');
     core.info(`Target: ${target}`);
     core.info(`Docker image: ${dockerImage}`);
     core.info(`Final args: ${zapArgs.join(' ')}`);
 
-    // ✅ Run Docker container
+    // Run Docker container (capture exit code)
     const dockerArgs: string[] = [
       'run',
       '--rm',
@@ -130,87 +58,49 @@ fs.chmodSync(reportsDir, 0o777);
       ...zapArgs
     ];
 
-    // const exitCode = await exec.exec('docker', dockerArgs);
+    const exitCode: number = await exec.exec('docker', dockerArgs, {
+      ignoreReturnCode: true
+    });
 
-    // core.info(`ZAP scan finished with exit code: ${exitCode}`);
+    core.info(`ZAP scan finished with exit code: ${exitCode}`);
 
-    // // ✅ Handle ZAP exit codes explicitly (important for CI behaviour)
-    // if (exitCode === 1) {
-    //   core.setFailed('ZAP detected at least one FAIL issue');
-    // } else if (exitCode === 2) {
-    //   core.warning('ZAP detected WARN issues');
-    // } else if (exitCode === 3) {
-    //   core.setFailed('ZAP execution failed (configuration/runtime issue)');
-    // }
+    // Handle exit codes
+    if (exitCode === 1) {
+      core.setFailed('ZAP detected at least one FAIL (High/Critical) issue');
+    } else if (exitCode === 2) {
+      core.warning('ZAP detected WARN (Medium) issues — not failing the build');
+    } else if (exitCode === 3) {
+      core.setFailed('ZAP execution failed (runtime/config issue)');
+    } else {
+      core.info('ZAP scan passed with no blocking issues');
+    }
 
-      const exitCode = await exec.exec('docker', dockerArgs, {
-        ignoreReturnCode: true
-      });
+    // ---- Report summary generation (now inside run so reportsDir & exitCode are defined) ----
+    try {
+      const reportPath = path.join(reportsDir, 'report.html');
+      if (fs.existsSync(reportPath)) {
+        // Optionally parse htmlContent if needed
+        // const htmlContent = fs.readFileSync(reportPath, 'utf-8');
 
-      core.info(`ZAP scan finished with exit code: ${exitCode}`);
-
-      // ✅ Only fail on FAIL (High/Critical)
-      if (exitCode === 1) {
-        core.setFailed('ZAP detected at least one FAIL (High/Critical) issue');
-      } else if (exitCode === 2) {
-        core.warning('ZAP detected WARN (Medium) issues — not failing the build');
-      } else if (exitCode === 3) {
-        core.setFailed('ZAP execution failed (runtime/config issue)');
+        const jsonReport = {
+          timestamp: new Date().toISOString(),
+          htmlReportPath: 'report.html',
+          scanStatus: exitCode === 0 ? 'passed' : 'failed',
+          exitCode
+        };
+        fs.writeFileSync(path.join(reportsDir, 'report.json'), JSON.stringify(jsonReport, null, 2));
+        core.info('Wrote scan summary to report.json');
       } else {
-        core.info('ZAP scan passed with no blocking issues');
+        core.warning(`ZAP report not found at ${reportPath}`);
       }
-
+    } catch (err) {
+      core.warning(`Failed to write JSON report: ${err instanceof Error ? err.message : String(err)}`);
+    }
+    // ------------------------------------------------------------------------------------------
 
   } catch (error) {
     core.setFailed(error instanceof Error ? error.message : String(error));
   }
 }
-// After ZAP scan completes:
-const reportPath = path.join(reportsDir, 'report.html');
-if (fs.existsSync(reportPath)) {
-  // Parse HTML and create JSON report
-  const htmlContent = fs.readFileSync(reportPath, 'utf-8');
-  const jsonReport = {
-    timestamp: new Date().toISOString(),
-    htmlReportPath: 'report.html',
-    scanStatus: exitCode === 0 ? 'passed' : 'failed'
-  };
-  fs.writeFileSync(path.join(reportsDir, 'report.json'), JSON.stringify(jsonReport, null, 2));
-}
+
 run();
-
-
-// import * as core from '@actions/core';
-// import * as exec from '@actions/exec';
-// import * as github from '@actions/github';
-// import { DefaultArtifactClient } from '@actions/artifact';   // ✅ FIX
-
-// async function run(): Promise<void> {
-//   try {
-//     const zapVersion = core.getInput('zap-version');
-//     const rules = core.getInput('rules-file-name');
-
-//     await exec.exec('docker', [
-//       'run',
-//       '--rm',
-//       '-v', `${process.cwd()}:/zap/wrk`,
-//       'owasp/zap2docker-stable',
-//       'zap-baseline.py',
-//       '-r', 'report.html'
-//     ]);
-
-//     // ✅ Correct artifact client
-//     const artifactClient = new DefaultArtifactClient();
-
-//     await artifactClient.uploadArtifact(
-//       'zap-baseline-report',
-//       ['report.html'],
-//       process.cwd()
-//     );
-
-//   } catch (error) {
-//     core.setFailed(error instanceof Error ? error.message : String(error));
-//   }
-// }
-
-// run();
