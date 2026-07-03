@@ -1,18 +1,133 @@
-name: Trivy SCA Scan   # <-- Workflow Name
+name: ZAP DAST Scan
 
 on:
   push:
-  pull_request:
 
 jobs:
-  trivy-sca:
+  zap-dast:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout source
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Run Trivy SCA Scan Action
-        uses: ./.github/actions/trivy-sca   # <-- Calling your custom action
+      # - name: Run ZAP Baseline Scan
+      #   uses: zaproxy/action-baseline@v0.15.0
+      #   with:
+      #     target: https://juice-shop.herokuapp.com
+      #     cmd_options: "-a"
+      #     fail_action: false   # ✅ IMPORTANT
+
+      # - name: Install OWASP ZAP
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y zaproxy
+
+
+      # ✅ Move reports from container to workspace
+      - name: Prepare reports
+        if: always()
+        run: |
+          mkdir -p zap-reports
+          cp -r /home/runner/work/_temp/_github_home/.ZAP/* zap-reports/ || true
+          ls -R zap-reports || true
+          
+      - name: Run ZAP Baseline Scan
+        uses: ./.github/actions/zap-type
+        with:
+          target: "https://example.com"
+          rules-file-name: "rules.conf"
+          
+      - name: debug
+        if: always()
+        run: |
+          ls -lah zap-reports 
+
+
+      - name: Upload ZAP report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-dast-report
+          path: zap-reports/
+
+      # ✅ Summary (based on JSON if available)
+      - name: Publish Summary
+        if: always()
+        run: |
+          echo "<h2>🔐 OWASP ZAP Report</h2>" >> $GITHUB_STEP_SUMMARY
+
+          FILE="zap-reports/report.json"
+
+          if [ -z "$FILE" ]; then
+            echo "<p>⚠️ No ZAP report found.</p>" >> $GITHUB_STEP_SUMMARY
+            exit 0
+          fi
+          
+            HIGH=$(jq '[.site[].alerts[]? | select(.riskcode=="3")] | length'  "$FILE")
+              MEDIUM=$(jq '[.site[].alerts[]? | select(.riskcode=="2")] | length'  "$FILE")
+              LOW=$(jq '[.site[].alerts[]? | select(.riskcode=="1")] | length'  "$FILE")
+              INFO=$(jq '[.site[].alerts[]? | select(.riskcode=="0")] | length'  "$FILE")
+          
+              {
+                echo "## 🔐 OWASP ZAP Results"
+                echo ""
+                echo "| Severity | Count |"
+                echo "|----------|-------|"
+                echo "| 🔴 High | $HIGH |"
+                echo "| 🟠 Medium | $MEDIUM |"
+                echo "| 🟡 Low | $LOW |"
+                echo "| 🔵 Info | $INFO |"
+              } >> "$GITHUB_STEP_SUMMARY"
+           
+          echo "<p>📄 Download artifact <b>zap-dast-report</b> to view the full HTML report.</p>" >> "$GITHUB_STEP_SUMMARY"
+          
+      - name: Publish Summary
+        if: always()
+        run: |
+         
+         THRESHOLD="medium"
+          echo "${THRESHOLD,,}" 
+          FILE="zap-reports/report.json"
+
+          case "${THRESHOLD,,}" in
+            high)
+              FILTER='.riskcode=="3"'
+              ;;
+            medium)
+              FILTER='.riskcode=="3" or .riskcode=="2"'
+              ;;
+            low)
+              FILTER='.riskcode=="3" or .riskcode=="2" or .riskcode=="1"'
+              ;;
+          esac
+          
+                  
+          {
+            echo "## 🔐 OWASP ZAP Results"
+            echo
+            echo "| Severity | Vulnerability | Instances |"
+            echo "|----------|---------------|-----------|"
+          } >> "$GITHUB_STEP_SUMMARY"
+          
+          jq -r "
+          .site[].alerts[]
+          | select($FILTER)
+          | [.riskcode, .alert, .count]
+          | @tsv
+          " "$FILE" |
+          while IFS=$'\t' read -r riskcode alert count; do
+
+            case "$riskcode" in
+              3) severity="🔴 High" ;;
+              2) severity="🟠 Medium" ;;
+              1) severity="🟡 Low" ;;
+
+            esac
+          
+            echo "| $severity | $alert | $count |" >> "$GITHUB_STEP_SUMMARY"
+          done
+
 
       - name: Run OWASP ZAP Baseline Scan
         uses: zaproxy/action-baseline@v0.10.0

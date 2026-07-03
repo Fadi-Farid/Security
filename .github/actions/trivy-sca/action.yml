@@ -1,6 +1,19 @@
 name: "Trivy SCA Scan Action"
 description: "Reusable action for Trivy filesystem SCA + secret scanning"
 
+inputs:
+  severity:
+    description: "Severity levels to report."
+    required: false
+    default: "HIGH,CRITICAL"
+  scanners:
+    description: "Trivy scanners to enable (e.g., vuln,secret,config)."
+    required: false
+    default: "vuln,secret"
+outputs:
+  sarif_file:
+    description: "Generated SARIF file"
+    value: trivy-results.sarif
 runs:
   using: "composite"
   steps:
@@ -74,10 +87,16 @@ runs:
         echo "</details>" >> $GITHUB_STEP_SUMMARY
 
     - name: Run Trivy SCA Scan
-      uses: aquasecurity/trivy-action@0.20.0
+      id: trivy
+      uses: aquasecurity/trivy-action@v0.20.0
       with:
         scan-type: "fs"
-        scanners: "vuln,secret"
-        severity: "HIGH,CRITICAL"
+        scanners: ${{ inputs.scanners }}
+        severity: ${{ inputs.severity }}
         ignore-unfixed: true
         exit-code: 1
+        format: "sarif"
+        output: "trivy-results.sarif"
+            
+
+
