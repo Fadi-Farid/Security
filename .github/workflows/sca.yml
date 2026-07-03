@@ -82,4 +82,47 @@ jobs:
            
           echo "<p>📄 Download artifact <b>zap-dast-report</b> to view the full HTML report.</p>" >> "$GITHUB_STEP_SUMMARY"
           
+      - name: Publish Summary
+        if: always()
+        run: |
+          THRESHOLD="${THRESHOLD:-medium}"
+          
+          case "${THRESHOLD,,}" in
+            high)
+              FILTER='.riskcode=="3"'
+              ;;
+            medium)
+              FILTER='.riskcode=="3" or .riskcode=="2"'
+              ;;
+            low)
+              FILTER='.riskcode=="3" or .riskcode=="2" or .riskcode=="1"'
+              ;;
+          esac
+          
+          HIGH=$(jq '[.site[].alerts[]? | select(.riskcode=="3")] | length' report.json)
+          MEDIUM=$(jq '[.site[].alerts[]? | select(.riskcode=="2")] | length' report.json)
+          LOW=$(jq '[.site[].alerts[]? | select(.riskcode=="1")] | length' report.json)
+          
+          {
+            echo "## 🔐 OWASP ZAP Results"
+            echo
+            echo "| Severity | Count |"
+            echo "|----------|-------|"
+            echo "| 🔴 High | $HIGH |"
+            echo "| 🟠 Medium | $MEDIUM |"
+            echo "| 🟡 Low | $LOW |"
+            echo
+          
+            echo "### Vulnerabilities meeting threshold: \`$THRESHOLD\`"
+            echo
+            echo "| Severity | Vulnerability | Instances |"
+            echo "|----------|--------------|-----------|"
+          
+            jq -r "
+              .site[].alerts[]
+              | select($FILTER)
+              | \"| \(if .riskcode==\\\"3\\\" then \\\"🔴 High\\\" elif .riskcode==\\\"2\\\" then \\\"🟠 Medium\\\" else \\\"🟡 Low\\\" end) | \(.alert) | \(.count) |\"
+            " report.json
+          
+          } >> "$GITHUB_STEP_SUMMARY"
 
