@@ -64,10 +64,10 @@ jobs:
             exit 0
           fi
           
-            HIGH=$(jq '[.site[].alerts[]? | select(.riskcode=="3")] | length' $FILE)
-              MEDIUM=$(jq '[.site[].alerts[]? | select(.riskcode=="2")] | length' $FILE)
-              LOW=$(jq '[.site[].alerts[]? | select(.riskcode=="1")] | length' $FILE)
-              INFO=$(jq '[.site[].alerts[]? | select(.riskcode=="0")] | length' $FILE)
+            HIGH=$(jq '[.site[].alerts[]? | select(.riskcode=="3")] | length'  "$FILE")
+              MEDIUM=$(jq '[.site[].alerts[]? | select(.riskcode=="2")] | length'  "$FILE")
+              LOW=$(jq '[.site[].alerts[]? | select(.riskcode=="1")] | length'  "$FILE")
+              INFO=$(jq '[.site[].alerts[]? | select(.riskcode=="0")] | length'  "$FILE")
           
               {
                 echo "## 🔐 OWASP ZAP Results"
