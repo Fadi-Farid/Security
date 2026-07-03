@@ -31,7 +31,8 @@ jobs:
           mkdir -p zap-reports
           cp -r /home/runner/work/_temp/_github_home/.ZAP/* zap-reports/ || true
           ls -R zap-reports || true
-
+          
+      - name: Run ZAP Baseline Scan
         uses: ./.github/actions/zap-type
         with:
           target: "https://example.com"
