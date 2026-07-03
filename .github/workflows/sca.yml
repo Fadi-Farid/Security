@@ -37,6 +37,13 @@ jobs:
         with:
           target: "https://example.com"
           rules-file-name: "rules.conf"
+      - name: debug
+        if: always()
+        run: |
+          ls -lah
+          find . -name "*.html"
+          find . -name "*.json"
+
 
       - name: Upload ZAP report
         if: always()
@@ -57,7 +64,7 @@ jobs:
             echo "<p>⚠️ No ZAP report found.</p>" >> $GITHUB_STEP_SUMMARY
             exit 0
           fi
-    
+     
           HIGH=$(grep -oP '(?<=High</td><td>)[0-9]+' "$FILE" | head -1)
           MEDIUM=$(grep -oP '(?<=Medium</td><td>)[0-9]+' "$FILE" | head -1)
           LOW=$(grep -oP '(?<=Low</td><td>)[0-9]+' "$FILE" | head -1)
