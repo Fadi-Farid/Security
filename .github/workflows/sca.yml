@@ -85,7 +85,7 @@ jobs:
       - name: Publish Summary
         if: always()
         run: |
-          THRESHOLD="high"
+          THRESHOLD="low"
           FILE="zap-reports/report.json"
 
           case "${THRESHOLD,,}" in
@@ -103,19 +103,6 @@ jobs:
           HIGH=$(jq '[.site[].alerts[]? | select(.riskcode=="3")] | length' "$FILE")
           MEDIUM=$(jq '[.site[].alerts[]? | select(.riskcode=="2")] | length' "$FILE")
           LOW=$(jq '[.site[].alerts[]? | select(.riskcode=="1")] | length' "$FILE")
-          
-          {
-            echo "## 🔐 OWASP ZAP Results"
-            echo
-            echo "| Severity | Count |"
-            echo "|----------|-------|"
-            echo "| 🔴 High | $HIGH |"
-            echo "| 🟠 Medium | $MEDIUM |"
-            echo "| 🟡 Low | $LOW |"
-            echo
-        
-          
-          } >> "$GITHUB_STEP_SUMMARY"
 
                   
           {
