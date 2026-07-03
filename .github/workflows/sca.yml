@@ -99,9 +99,9 @@ jobs:
               ;;
           esac
           
-          HIGH=$(jq '[.site[].alerts[]? | select(.riskcode=="3")] | length' report.json)
-          MEDIUM=$(jq '[.site[].alerts[]? | select(.riskcode=="2")] | length' report.json)
-          LOW=$(jq '[.site[].alerts[]? | select(.riskcode=="1")] | length' report.json)
+          HIGH=$(jq '[.site[].alerts[]? | select(.riskcode=="3")] | length' "$FILE")
+          MEDIUM=$(jq '[.site[].alerts[]? | select(.riskcode=="2")] | length' "$FILE")
+          LOW=$(jq '[.site[].alerts[]? | select(.riskcode=="1")] | length' "$FILE")
           
           {
             echo "## 🔐 OWASP ZAP Results"
@@ -122,7 +122,7 @@ jobs:
               .site[].alerts[]
               | select($FILTER)
               | \"| \(if .riskcode==\\\"3\\\" then \\\"🔴 High\\\" elif .riskcode==\\\"2\\\" then \\\"🟠 Medium\\\" else \\\"🟡 Low\\\" end) | \(.alert) | \(.count) |\"
-            " report.json
+            " "$FILE"
           
           } >> "$GITHUB_STEP_SUMMARY"
 
