@@ -86,7 +86,8 @@ jobs:
         if: always()
         run: |
           THRESHOLD="medium"
-          
+          FILE="zap-reports/report.json"
+
           case "${THRESHOLD,,}" in
             high)
               FILTER='.riskcode=="3"'
