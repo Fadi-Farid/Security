@@ -41,9 +41,7 @@ jobs:
       - name: debug
         if: always()
         run: |
-          ls -lah
-          find . -name "*.html"
-          find . -name "*.json"
+          ls -lah zap-reports 
 
 
       - name: Upload ZAP report
