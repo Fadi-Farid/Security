@@ -103,10 +103,6 @@ jobs:
               ;;
           esac
           
-          HIGH=$(jq '[.site[].alerts[]? | select(.riskcode=="3")] | length' "$FILE")
-          MEDIUM=$(jq '[.site[].alerts[]? | select(.riskcode=="2")] | length' "$FILE")
-          LOW=$(jq '[.site[].alerts[]? | select(.riskcode=="1")] | length' "$FILE")
-
                   
           {
             echo "## 🔐 OWASP ZAP Results"
@@ -117,7 +113,7 @@ jobs:
           
           jq -r '
           .site[].alerts[]
-          | select(.riskcode=="3" or .riskcode=="2")
+          | select($FILTER
           | [.riskcode, .alert, .count]
           | @tsv
           ' "$FILE" |
