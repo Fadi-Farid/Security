@@ -59,26 +59,14 @@ jobs:
         run: |
           echo "<h2>🔐 OWASP ZAP Report</h2>" >> $GITHUB_STEP_SUMMARY
 
-          FILE="zap-reports/report.html"
+          FILE="zap-reports/report.json"
 
           if [ -z "$FILE" ]; then
             echo "<p>⚠️ No ZAP report found.</p>" >> $GITHUB_STEP_SUMMARY
             exit 0
           fi
           cat  "$FILE"
-          
-          HIGH=$(grep -oP '(?<=High</td><td>)[0-9]+' "$FILE" | head -1)
-          MEDIUM=$(grep -oP '(?<=Medium</td><td>)[0-9]+' "$FILE" | head -1)
-          LOW=$(grep -oP '(?<=Low</td><td>)[0-9]+' "$FILE" | head -1)
-          INFO=$(grep -oP '(?<=Informational</td><td>)[0-9]+' "$FILE" | head -1)
-          
-          echo "<table>" >> "$GITHUB_STEP_SUMMARY"
-          echo "<tr><th>Severity</th><th>Count</th></tr>" >> "$GITHUB_STEP_SUMMARY"
-          echo "<tr><td>🔴 High</td><td>${HIGH:-0}</td></tr>" >> "$GITHUB_STEP_SUMMARY"
-          echo "<tr><td>🟠 Medium</td><td>${MEDIUM:-0}</td></tr>" >> "$GITHUB_STEP_SUMMARY"
-          echo "<tr><td>🟡 Low</td><td>${LOW:-0}</td></tr>" >> "$GITHUB_STEP_SUMMARY"
-          echo "<tr><td>🔵 Informational</td><td>${INFO:-0}</td></tr>" >> "$GITHUB_STEP_SUMMARY"
-          echo "</table>" >> "$GITHUB_STEP_SUMMARY"
+ 
           
           echo "<p>📄 Download artifact <b>zap-dast-report</b> to view the full HTML report.</p>" >> "$GITHUB_STEP_SUMMARY"
           
