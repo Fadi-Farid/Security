@@ -86,7 +86,6 @@ jobs:
         if: always()
         run: |
          
-         THRESHOLD="${THRESHOLD:-medium}"
          THRESHOLD="low"
           echo "${THRESHOLD,,}" 
           FILE="zap-reports/report.json"
@@ -111,16 +110,20 @@ jobs:
             echo "|----------|---------------|-----------|"
           } >> "$GITHUB_STEP_SUMMARY"
           
-          jq -r '
+          jq -r "
           .site[].alerts[]
           | select($FILTER)
           | [.riskcode, .alert, .count]
           | @tsv
-          ' "$FILE" |
+          " "$FILE" |
           while IFS=$'\t' read -r riskcode alert count; do
+
             case "$riskcode" in
               3) severity="🔴 High" ;;
               2) severity="🟠 Medium" ;;
+              1) severity="🟡 Low" ;;
+              0) severity="🔵 Info" ;;
+
             esac
           
             echo "| $severity | $alert | $count |" >> "$GITHUB_STEP_SUMMARY"
