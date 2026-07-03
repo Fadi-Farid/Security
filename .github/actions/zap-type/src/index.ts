@@ -102,6 +102,7 @@ fs.chmodSync(reportsDir, 0o777);
       'zap-baseline.py',
       '-t', target,
       '-r', 'report.html'
+      '-J', 'report.json' 
     ];
 
     // ✅ Optional: rules file
