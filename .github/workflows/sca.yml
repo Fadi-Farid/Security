@@ -85,7 +85,7 @@ jobs:
       - name: Publish Summary
         if: always()
         run: |
-          THRESHOLD="${THRESHOLD:-medium}"
+          THRESHOLD="medium"
           
           case "${THRESHOLD,,}" in
             high)
