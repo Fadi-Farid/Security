@@ -63,9 +63,23 @@ jobs:
             echo "<p>⚠️ No ZAP report found.</p>" >> $GITHUB_STEP_SUMMARY
             exit 0
           fi
-          cat  "$FILE"
- 
           
+            HIGH=$(jq '[.site[].alerts[]? | select(.riskcode=="3")] | length' report.json)
+              MEDIUM=$(jq '[.site[].alerts[]? | select(.riskcode=="2")] | length' report.json)
+              LOW=$(jq '[.site[].alerts[]? | select(.riskcode=="1")] | length' report.json)
+              INFO=$(jq '[.site[].alerts[]? | select(.riskcode=="0")] | length' report.json)
+          
+              {
+                echo "## 🔐 OWASP ZAP Results"
+                echo ""
+                echo "| Severity | Count |"
+                echo "|----------|-------|"
+                echo "| 🔴 High | $HIGH |"
+                echo "| 🟠 Medium | $MEDIUM |"
+                echo "| 🟡 Low | $LOW |"
+                echo "| 🔵 Info | $INFO |"
+              } >> "$GITHUB_STEP_SUMMARY"
+           
           echo "<p>📄 Download artifact <b>zap-dast-report</b> to view the full HTML report.</p>" >> "$GITHUB_STEP_SUMMARY"
           
 
