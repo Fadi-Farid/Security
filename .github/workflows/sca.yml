@@ -32,11 +32,12 @@ jobs:
           cp -r /home/runner/work/_temp/_github_home/.ZAP/* zap-reports/ || true
           ls -R zap-reports || true
 
-      - name: Run ZAP baseline (custom action)
-        uses: ./.github/actions/zap-type   # ✅ your local action
+        uses: ./.github/actions/zap-type
         with:
           target: "https://example.com"
           rules-file-name: "rules.conf"
+          output_json: 'true'
+          
       - name: debug
         if: always()
         run: |
