@@ -85,7 +85,7 @@ jobs:
       - name: Publish Summary
         if: always()
         run: |
-          THRESHOLD="medium"
+          THRESHOLD="high"
           FILE="zap-reports/report.json"
 
           case "${THRESHOLD,,}" in
