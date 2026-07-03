@@ -165,7 +165,18 @@ fs.chmodSync(reportsDir, 0o777);
     core.setFailed(error instanceof Error ? error.message : String(error));
   }
 }
-
+// After ZAP scan completes:
+const reportPath = path.join(reportsDir, 'report.html');
+if (fs.existsSync(reportPath)) {
+  // Parse HTML and create JSON report
+  const htmlContent = fs.readFileSync(reportPath, 'utf-8');
+  const jsonReport = {
+    timestamp: new Date().toISOString(),
+    htmlReportPath: 'report.html',
+    scanStatus: exitCode === 0 ? 'passed' : 'failed'
+  };
+  fs.writeFileSync(path.join(reportsDir, 'report.json'), JSON.stringify(jsonReport, null, 2));
+}
 run();
 
 
