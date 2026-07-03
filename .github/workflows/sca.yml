@@ -86,7 +86,7 @@ jobs:
         if: always()
         run: |
          
-         THRESHOLD="medium"
+         THRESHOLD="high"
           echo "${THRESHOLD,,}" 
           FILE="zap-reports/report.json"
 
@@ -101,7 +101,7 @@ jobs:
               FILTER='.riskcode=="3" or .riskcode=="2" or .riskcode=="1"'
               ;;
           esac
-          
+
                   
           {
             echo "## 🔐 OWASP ZAP Results"
