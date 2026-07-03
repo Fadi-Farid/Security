@@ -101,7 +101,7 @@ fs.chmodSync(reportsDir, 0o777);
     const zapArgs: string[] = [
       'zap-baseline.py',
       '-t', target,
-      '-r', 'report.html'
+      '-r', 'report.html',
       '-J', 'report.json' 
     ];
 
