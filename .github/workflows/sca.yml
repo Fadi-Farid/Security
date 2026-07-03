@@ -130,7 +130,7 @@ jobs:
           | select(.riskcode=="3" or .riskcode=="2")
           | [.riskcode, .alert, .count]
           | @tsv
-          ' report.json |
+          ' "$FILE" |
           while IFS=$'\t' read -r riskcode alert count; do
             case "$riskcode" in
               3) severity="🔴 High" ;;
