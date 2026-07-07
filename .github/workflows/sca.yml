@@ -35,7 +35,7 @@ jobs:
       - name: Run ZAP Baseline Scan
         uses: ./.github/actions/zap-type
         with:
-          target: "http://localhost:3000"
+          target: "http://badstore.net"
           rules-file-name: "rules.conf"
           
       - name: debug
