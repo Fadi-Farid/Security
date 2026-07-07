@@ -35,7 +35,7 @@ jobs:
       - name: Run ZAP Baseline Scan
         uses: ./.github/actions/zap-type
         with:
-          target: "https://example.com"
+          target: "http://testfire.net"
           rules-file-name: "rules.conf"
           
       - name: debug
